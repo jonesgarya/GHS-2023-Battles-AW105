@@ -1,0 +1,81 @@
+import java.util.*;
+public class MultiPlayer extends Player
+{
+    protected ArrayList<MultiPlayer> opponents = new ArrayList<MultiPlayer>();
+    protected int myHits = 0;
+    protected int myMisses = 0;
+    protected int myReguesses = 0;
+    
+    public void addOpponent(MultiPlayer o)
+    {opponents.add(o);}
+    public void removeOpponent(int i)
+    {opponents.remove(i);}
+    public ArrayList<MultiPlayer> getOpponents()
+    {return opponents;}
+    public int[] guessM()
+    {
+        return guessM(readExpandedInt("What row would you like to guess? ") - 1, readExpandedInt("What column would you like to guess? ") - 1);
+    }
+    public int[] guessM(int r, int c)
+    {
+        r = Math.abs(r%Grid.size); //moves the guess into the playing feild if outside of it.
+        c = Math.abs(c%Grid.size);
+        while(checkGuess(r,c))
+        {
+            println("Location already guessed. Please try again.");
+            r = readExpandedInt("Row: ") - 1;
+            c = readExpandedInt("Column: ") - 1;
+        }
+        return guessThem(r, c);
+    }
+    protected boolean checkGuess(int r, int c)
+    {
+        for(Player p : opponents)
+        {
+            if(p.getMyBoard().get(r,c).isUnguessed())
+            {return true;}
+        }
+        return false;
+    }
+    protected int[] guessThem(int r, int c)
+    {
+        int out[] = {0,0,0};
+        for(Player o : opponents)
+        {
+            if(!o.getMyBoard().get(r,c).isUnguessed())
+            {out[2]++;}
+            else if(o.getMyBoard().guess(r,c))
+            {out[0]++;}
+            else
+            {out[1]++;}
+        }
+        myHits+=out[0];
+        myMisses+=out[1];
+        myReguesses+=out[2];
+        return out;
+    }
+    
+    public void printHM()
+    {
+        myboard.printHM();
+    }
+    public void printTheirBoards()
+    {
+        println("");
+        for(Player o : opponents)
+        {
+            o.getMyBoard().printHM();
+            println("");
+        }
+        println("");
+    }
+    public void printTheirBoard()
+    {
+        printTheirBoards();
+    }
+    public void printLatestGuess(HashMap<Integer, Integer> guesses)
+    {
+        myboard.printLGs(guesses);
+        println("");
+    }
+}
