@@ -1,0 +1,61 @@
+import java.util.*;
+public class MultiCom extends MultiPlayer
+{
+    public Ship addShip(Ship s) // adds a ship to your list and board
+    {
+        if(unplaced.get(s.getLength()) > 0)
+        {
+            if(placeShip(s))
+            {
+                unplaced.put(s.getLength(),unplaced.get(s.getLength())-1);
+                placed.get(s.getLength()).add(s);
+                return s;
+            }
+        }
+        else
+        {
+            System.out.println("error # 124");
+        }
+//        println(unplaced.get(s.getLength()) == 0);
+//        println(unplaced);
+//        println(placed);
+        return null;
+    }
+    private boolean placeShip(Ship s) //Randomly adds a ship to the board
+    {
+        while(s.getColumn() == -1)
+        {
+            s.setLocation(s.getRow(), Randomizer.nextInt(myboard.size));
+        }
+        while(s.getRow() == -1)
+        {
+            s.setLocation(Randomizer.nextInt(myboard.size),s.getColumn());
+        }
+        while(s.getDirection() == -1)
+        {
+            s.setDirection(Randomizer.nextBoolean());
+        }
+        if(myboard.addShip(s))
+        {
+            return true;
+        }
+        while(true)
+        {
+            s.setLocation(Randomizer.nextInt(myboard.size), Randomizer.nextInt(myboard.size));
+            s.setDirection(Randomizer.nextBoolean());
+            if(myboard.addShip(s))
+            {return true;}
+        }
+    }
+    public int[] guessM()
+    {
+        int r = -1; //moves the guess into the playing feild if outside of it.
+        int c = -1;
+        while(r ==-1 || c==-1 || checkGuess(r,c))
+        {
+            r = Randomizer.nextInt(myboard.size);
+            c = Randomizer.nextInt(myboard.size);
+        }
+        return guessThem(r, c);
+    }
+}
