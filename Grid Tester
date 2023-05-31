@@ -1,0 +1,10 @@
+public class GridTester extends ConsoleProgram
+{
+    public void run()
+    {
+        Grid a = new Grid();
+        a.printHM();
+        println();
+        a.printShips();
+    }
+}
