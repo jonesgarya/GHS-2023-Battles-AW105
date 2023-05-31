@@ -20,8 +20,8 @@ public class Ship
     
     public Ship setLocation(int row, int column)
     {
-        this.row = Math.abs(row % Grid.size); 
-        this.column = Math.abs(column % Grid.size); 
+        this.row = row == -1 ? -1 : Math.abs(row % Grid.size); 
+        this.column = column == -1 ? -1 : Math.abs(column % Grid.size); 
         return this;
     }
     public Ship setDirection(boolean direction)
@@ -40,15 +40,15 @@ public class Ship
     {   return direction == 1;  }
     public int getLength()
     {   return length;  }
-    public String directionToString()
+    /**public String directionToString() //never called
     {
         return direction == 1 ? "Vertical" : (direction == 0? "Horizonatal" : "Not Set");
-    }
-    public int endRow()
+    }**/
+    public int endRow() // adds the row to the length if horizontal or 0 if not
     {
         return row + length * (direction == -1 ? 0 : direction);
     }
-    public int endColumn()
+    public int endColumn() //adds the column to the length if verticle or 0 if not
     {
         return column + length * (direction == -1 ? 0 : 1- direction);
     }
