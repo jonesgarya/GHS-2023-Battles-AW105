@@ -14,8 +14,10 @@ public class Location
     public boolean hasShip()
     {   return ship;    }
     
-    public void guess()
-    {   guessed = true; }
+    public boolean guess()
+    {   guessed = true; 
+        return ship;
+    }
     public void setShip(boolean ship)
     {   this.ship = ship;   }
 }
