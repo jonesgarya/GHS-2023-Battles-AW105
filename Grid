@@ -1,10 +1,12 @@
-public class Grid extends ConsoleProgram
+import java.util.*;
+public class Grid extends Screen
 {
     public static int size = 10;
     
     private Location[][] grid = null;
     private Player owner = null;
     private Location latestGuess;
+    private HashMap<Integer, Integer> alreadyGuessed = new HashMap<Integer, Integer>();
     
     public static int map(int in, int inMin, int inMax, int outMin, int outMax)
     {
@@ -35,9 +37,10 @@ public class Grid extends ConsoleProgram
     public boolean guess(int r, int c) // Marks the location has been guessed and returns if it
     {
         if(get(r,c).guess())
-        {
-            owner.hit();
-        }
+        {owner.hit();}
+        else
+        {owner.miss();}
+        
         latestGuess = grid[r][c];
         return grid[r][c].hasShip();
     }
@@ -131,7 +134,7 @@ public class Grid extends ConsoleProgram
                 
     }   }   }
     
-    public void printLG() //printHMS but marks latest guess as L
+    public void printLG() //printHMS but marks latest guess as L if hit and l if miss
     {
         println("");
         print("  1 2 3 4 5 6 7 8 9 10");
@@ -148,7 +151,47 @@ public class Grid extends ConsoleProgram
                 }
                 else
                 {
-                    a = grid[i][j] == latestGuess? "L" : (grid[i][j].hasShip() ? "H" : "O");
+                    if(grid[i][j] == latestGuess)
+                    {
+                        a = grid[i][j].hasShip() ? "L" : "l";
+                    }
+                    else
+                    {
+                        a = grid[i][j].hasShip() ? "H" : "O";
+                    }
+                }
+                print(" " + a);
+                
+    }   }   }
+    public void printLGs(HashMap<Integer, Integer> guesses) //printHMS but marks latest guess as L if hit and l if miss
+    {
+        println("");
+        print("  1 2 3 4 5 6 7 8 9 10");
+        for(int i = 0; i<10; i++)
+        {
+            println("");
+            print("" + (char)( i + (int) 'a'));
+            for(int j = 0; j< 10; j++)
+            {
+                String a;
+                if(grid[i][j].isUnguessed())
+                {
+                    a = grid[i][j].hasShip() ? "X" : "-";
+                }
+                else
+                {
+                    if(guesses.get(i) == j)
+                    {
+                        if(alreadyGuessed.get(i) == j)
+                        {a = grid[i][j].hasShip() ? "P" : "p";}
+                        else
+                        {a = grid[i][j].hasShip() ? "L" : "l";}
+                        alreadyGuessed.put(i,j);
+                    }
+                    else
+                    {
+                        a = grid[i][j].hasShip() ? "H" : "O";
+                    }
                 }
                 print(" " + a);
                 
