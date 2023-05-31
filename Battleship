@@ -1,11 +1,13 @@
 import java.util.*;
-public class Battleship extends ConsoleProgram
+public class Battleship extends Screen
 {
     //private ArrayList<Player> players = new ArrayList<Player>();
-    
+    Screen pub = new Screen(true);
+    Screen van = new Screen(null);
     private final int shipCount = Player.shipCount();
     public void run()
     {
+        setPublicActive(van);
         int humCount = readInt("How many Human players? ");
         int comCount = readInt("How many Computer players? ");
         if(humCount + comCount == 2)
@@ -25,68 +27,167 @@ public class Battleship extends ConsoleProgram
         {
             MultiPlayer(humCount, comCount);
         }
+        else if (humCount + comCount == 1)
+        {
+            SinglePlayer(humCount);
+        }
         else
         {
             println("Error. Please try a PvC game, on the house.");
         }
-    }
-    
-    public void PvP()
-    {
-        println("Not set up yet. Please try a PvC game, on the house.");
-    }
-    public void CvC()
-    {
-        println("Not set up yet. Please try a PvC game, on the house.");
-    }
-    public void MultiPlayer(int coms, int peeps)
-    {
-        println("Not set up yet. Please try a PvC game, on the house.");
-    }
-    
-    public void PvC()
-    {
-        Player p = new Player();
-        Player c = new Computer(p);
-        c.opponent = p;
-        p.opponent = c;
         
-        for(int i : p.SHIP_LENGTHS)
+    }
+    
+    private void MultiPlayer(int peeps, int coms)
+    {
+        ArrayList<MultiPlayer> players = new ArrayList<MultiPlayer>();
+        ArrayList<Integer> out = new ArrayList<Integer>();
+        //HashMap<Player, Boolean> type = new Hashmap<Player, Boolean>();
+        ArrayList<Boolean> type = new ArrayList<Boolean>();
+        for(int i = peeps+coms; i>0; i--)
         {
-            println();
-            println("Add a new ship of length " + i + " to your board.");
-            p.addShip(new Ship(i));
-            println();
-            c.addShip(new Ship(i));
-        }
-        boolean turn = Randomizer.nextBoolean();
-        double turnCount = 0;
-        while (true)
-        {
-            println("");  println("");
-            if(turn)
+            MultiPlayer p;
+            if(Randomizer.nextInt(i)>peeps)
             {
-                println("Your Turn!");
-                //p.pTheirBoard();
-                c.getMyBoard().printHM();
-                p.println("");
-                if(p.guess())
-                {
-                    println("");
-                    println("You got it!");
-                }
-                else
-                {
-                    println("");
-                    println("You missed it.");
-                }
+                coms--;
+                p = new MultiCom();
+                players.add(p);
+                //type.add(p, false);
+                type.add(false);
             }
             else
             {
-                println("Their Turn.");
-/**/            //c.pTheirBoard();
-                p.getMyBoard().printHM();
-                c.println("");
+                peeps--;
+                p = new MultiPlayer();
+                players.add(p);
+                //type.add(p, true);
+                type.add(true);
+                new Screen(false);
+            }
+            
+        }
+        for(int i = 0; i<)
+        {
+            for(MultiPlayer o : players)
+            {
+                if(p!=o)
+                {
+                    p.addOpponent(o);
+                }
+            }
+        }
+        for(int p = 0; p<players.size(); p++)
+        {
+            for(int i : players.get(p).SHIP_LENGTHS)
+            {
+                players.get(p).addShip(new Ship(i));
+            }
+        }
+        int round = 0;
+        while(players.size() - out.size() >1)
+        {
+            ++round;
+            for(int i = 0; i<players.size(); i++)
+            {
+                while(out.indexOf(i) == -1)
+                {i++;}
+                if(type.get(i))
+                {
+                    MultiPlayer p = players.get(i);
+                    nextScreen();
+                    if(p.getHits() > p.getMyBoard().size)
+                    {
+                        removeActiveScreen();
+                        pub.setPublicActive();
+                        println("Your out. (p" + i + ") r" + round);
+                        for(MultiPlayer o : p.getOpponents())
+                        {o.removeOpponent(i);}
+                        out.add(i);
+                    }
+                    else
+                    {
+                        println("Your Turn (p" + i + ")");
+                        p.printLatestGuess();
+                        println(p.deltaHits(true));
+                        readLine("");
+                        p.printTheirBoard();
+                        int[] guessR = p.guessM(); //guessResults
+                        println("You hit " + guessR[0] + " other players.");
+                        println("You missed " + guessR[1] + " other players.");
+                        println("You reguessed " + guessR[2] + " other players.");
+                        println("");
+                    }
+                }
+                else
+                {
+                    MultiPlayer c = players.get(i);
+                    pub.setPublicActive();
+                    if(c.getHits() > c.getMyBoard().size)
+                    {
+                        for(MultiPlayer o : c.getOpponents())
+                        {o.removeOpponent(i);}
+                        println("Computer " + i + " is out.");
+                        out.add(i);
+                    }
+                    else
+                    {
+                        if(i-1>=0 && !type.get(i-1)) {readLine("");}
+                        int[] guessR = c.guessM(); //guessResults
+                        println("Computer " + i + " hit " + guessR[0] + " other players.");
+                        println("Computer " + i + " missed " + guessR[1] + " other players.");
+                        println("Computer " + i + " reguessed " + guessR[2] + " other players.");
+                        println("");
+                    }
+                }
+            }
+        }
+        
+        println("Game");
+        println("");
+        pub.setPublicActive();
+        for(int i : out)
+        {
+            Player p = players.get(i);
+            println((type.get(i)?"Player ":"Computer ") + i);
+            p.pMyBoard();
+            println("");
+        }
+    }
+    private void SinglePlayer(int peeps)
+    {
+        if(peeps == 1)
+        {SinglePlayer(new Player(), new Computer());}
+        else
+        {SinglePlayer(new Computer(), new Computer());}
+    }
+    private void SinglePlayer(Player p, Computer c)
+    {
+        boolean mode = readBoolean("Would you like to place instead of guessing?");
+        if(mode)
+        {
+            c.opponent = p;
+            for(int i : p.SHIP_LENGTHS)
+            {
+                println();
+                p.addShip(new Ship(i));
+            }
+        }
+        else
+        {
+            p.opponent = c;
+            for(int i : p.SHIP_LENGTHS)
+            {
+                c.addShip(new Ship(i));
+            }
+        }
+        int round = 0;
+        if(mode)
+        {
+            while((p.getHits() < shipCount))
+            {
+                println("Round : " + ++round);
+                p.printLatestGuess();
+                println("");
                 if(c.guess())
                 {
                     println("");
@@ -95,22 +196,158 @@ public class Battleship extends ConsoleProgram
                 else
                 {
                     println("");
-                    println("They missed it!");
+                    println("They missed!");
+                }
+                readLine("");
+            }
+            println("");
+            println("Game!");
+        }
+        else
+        {
+            while((c.getHits() < shipCount))
+            {
+                println("Round : " + ++round);
+                c.getMyBoard().printHM();
+                println("");
+                if(p.guess())
+                {
+                    println("");
+                    println("I got it!");
+                }
+                else
+                {
+                    println("");
+                    println("I missed.");
                 }
             }
-            println("Round: " + ((int)(turnCount+= .5)));
+            println("");
+            println("Game!");
+            println((mode? p:c).getMisses() + " try to get a " + (mode? "lower":"higher") + " score next time");
+            
+        }
+    }
+    private void SinglePlayer(Computer p, Computer c)
+    {
+        c.opponent = p;
+        for(int i : p.SHIP_LENGTHS)
+        {
+            println();
+            p.addShip(new Ship(i));
+        }
+        int round = 0;
+        while((p.getHits() < shipCount))
+        {
+            println("Round : " + ++round);
+            p.printLatestGuess();
+            println("");
+            if(c.guess())
+            {
+                println("");
+                println("They got it.");
+            }
+            else
+            {
+                println("");
+                println("They missed!");
+            }
+            readLine("");
+        }
+        println("");
+        println("Game!");
+    }
+    
+    
+    private void CvC()
+    {tP(new Computer(), new Computer(), null);}
+    private void PvC()
+    {tP(new Player(), new Computer(), false);}
+    private void PvP()
+    {tP(new Player(), new Player(), true);}
+    private void tP(Player p, Player c, Boolean type)
+    {
+        c.opponent = p;
+        p.opponent = c;
+        double round = 0;
+        if(type != null && type)
+        {new Screen(false); new Screen(false); nextScreen();}
+        for(int i : p.SHIP_LENGTHS)
+        {
+            if(type != null && type){nextScreen(); van.setPublicActive();}
+            println();
+            //println("Add a new ship of length " + i + " to your board.");
+            p.addShip(new Ship(i));
+            if(type != null && type){nextScreen(); van.setPublicActive();}
+            println();
+            c.addShip(new Ship(i));
+        }
+        if(type == null){p.pMyShips(); c.pMyShips();}
+        boolean turn = Randomizer.nextBoolean();
+        double turnCount = 0;
+        if(type != null && type && turn){nextScreen();}
+        while (true)
+        {
+            boolean correct;
+            println("");  println("");
+            if(turn)
+            {
+                println("Your Turn! " + ((type == null || type) ? "(p1) " : "") + (int)round);
+                if(type != null){p.pTheirBoard();} // !=
+                else{c.getMyBoard().printHMS();}
+                println();
+                correct = p.guess();
+                if(correct)
+                {
+                    println("");
+                    println("I got it!");
+                }
+                else
+                {
+                    println("");
+                    println("I missed it.");
+                }
+            }
+            else
+            {
+                println((type == null || type)? "Your Turn! (p2)" + (int)round: "Their Turn. " + (int)round);
+                if(type != null){c.pTheirBoard();} //!=
+                else{p.getMyBoard().printHMS();}
+                println("");
+                correct = c.guess();
+                if(correct)
+                {
+                    println("");
+                    println(type != null && type ?  "I got it!" : "They got it.");
+                }
+                else
+                {
+                    println("");
+                    println(type != null && type ?  "I missed it." : "They missed!");
+                }
+            }
+            if(type == null){readLine("");}
+            if(type != null && type){nextScreen();}
             if((p.getHits() >= shipCount) || (c.getHits() >= shipCount))
             {break;}
-            println(p.getHits());
-            println(c.getHits());
-            println(shipCount);
+            //println(p.getHits());
+            //println(c.getHits());
+            //println(shipCount);
             turn = !turn;
+            round +=.5;
+            if(type != null && type){
+                if(turn)
+                {p.printLatestGuess();}
+                else
+                {c.printLatestGuess();}
+                println(correct ? "They got it." : "They missed!");
+            }
         }  
+        pub.setPublicActive();
         println(""); println(""); println("");
         if(turn)
         {
             println("You Won!");
-            println("Take a look at how close they were.");
+            println("Take a look at how close it was.");
             p.pMyShips();
             p.pMyBoard();
         }
@@ -120,30 +357,6 @@ public class Battleship extends ConsoleProgram
             println("Take a look at how close you were.");
             c.pMyShips();
             c.pMyBoard();
-        }
-        
-    }
-    public int readInt(String s)
-    {
-        while(true)
-        {
-            String in = readLine(s);
-            boolean test = true;
-            for(int i = 0; i<in.length() && test; i++)
-            {
-                test = Character.isLetterOrDigit(s.charAt(i));
-            }
-            if(test)
-            {
-                int out = 0;
-                for(int i = 0; i<in.length() && test; i++)
-                {
-                    out*= 10;
-                    out+= in.toLowerCase().charAt(i) - (Character.isLetter(in.charAt(i))? ('a'-1)  : '0');
-                }
-                return out;
-            }
-            print("Invalid input. Please provide a whole number or letter.");
         }
     }
 }
