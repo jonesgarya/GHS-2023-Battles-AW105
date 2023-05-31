@@ -1,7 +1,6 @@
-import java.util.*;
 public class Ship
 {
-    private int length;
+    private int length = -1;
     private int row = -1;
     private int column = -1;
     private int direction = -1;
@@ -21,10 +20,10 @@ public class Ship
     
     public void setLocation(int row, int column)
     {
-        this.row = Math.abs(row % 10); 
-        this.column = Math.abs(column %10); 
+        this.row = Math.abs(row % Grid.size); 
+        this.column = Math.abs(column % Grid.size); 
     }
-    public void setDirection(boolean direction)
+    public void isDirectionSet(boolean direction)
     {
         this.direction = direction ? 1 : 0;
     }
@@ -36,10 +35,6 @@ public class Ship
     public int getColumn()
     {
         return column;
-    }
-    public int getLength()
-    {
-        return length;
     }
     public int getDirection()
     {
