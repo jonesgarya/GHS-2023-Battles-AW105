@@ -4,6 +4,11 @@ public class Grid
     
     private Location[][] grid;
     
+    public static int map(int in, int inMin, int inMax, int outMin, int outMax)
+    {
+        return (int)( ( (in - inMin - 0.0) / (inMax - inMin) ) * (outMax - outMin) + outMin );
+    }
+    
     public Grid(){
         grid = new Location[size][size];
         for(int i = 0; i<size; i++)
@@ -40,6 +45,19 @@ public class Grid
     {
         return grid[row][column];
     }
+    public void addShip(Ship s)
+    {
+        System.out.println(s.getLength());
+        for(int i = 0; i<s.getLength(); i++)
+        {
+            System.out.println(i);
+            int a = map(i, 0, s.getLength(), s.getRow(), s.endRow());
+            int b = map(i, 0, s.getLength(), s.getColumn(), s.endColumn());
+            System.out.println(a);
+            System.out.println(b);
+            setShip(a,b, true);
+        }
+    }
     
     public void printHM()
     {
@@ -69,8 +87,5 @@ public class Grid
                 
     }   }   }
     
-    public static int map(int in, int inMin, int inMax, int outMin, int outMax)
-    {
-        return ( (in - inMin) / (inMax - inMin) ) * (outMax - outMin) + outMin;
-    }
+    
 }
