@@ -1,0 +1,211 @@
+import java.util.*;
+public class Screen extends ConsoleProgram
+{
+    private static int screenSize = 1010;
+    private ArrayList<String> text = new ArrayList<String>();
+    private String line = "";
+    private static ArrayList<Screen> screens = new ArrayList<Screen>();
+    private static Screen active;
+    private static int actNum = -1;
+    public boolean pub = false;
+    public boolean vanashing = false;
+    
+    public Screen()
+    {}
+    public Screen(Boolean Public)
+    { if(Public != null && !Public)
+        {
+            screens.add(this);
+            if(actNum == -1)
+            {active = this; actNum = 0;}
+        }
+        text.add("");
+        pub = Public == null || Public;
+        vanashing = Public == null;
+        
+    }
+    public int readInt(String s)
+    {
+        while (true)
+        {
+            print(s);
+            int out = super.readInt("");
+            active.prePrinted("" + out);
+            return out;
+        }
+    }
+    public boolean readBoolean(String s)
+    {
+        while (true)
+        {
+            print(s);
+            boolean out = super.readBoolean("");
+            active.prePrinted("" + out);
+            return out;
+        }
+    }
+    public double readDouble(String s)
+    {
+        while (true)
+        {
+            print(s);
+            double out = super.readDouble("");
+            active.prePrinted("" + out);
+            return out;
+        }
+    }
+    public String readLine(String s)
+    {
+        while (true)
+        {
+            print(s);
+            String out = super.readLine("");
+            active.prePrinted(out);
+            return out;
+        }
+    }
+    
+    public int readExpandedInt(String s)
+    {
+        while(true)
+        {
+            String in = readLine(s);
+            boolean test = true;
+            for(int i = 0; i<in.length() && test; i++)
+            {
+                test = Character.isLetterOrDigit(s.charAt(i));
+            }
+            if(test)
+            {
+                int out = 0;
+                for(int i = 0; i<in.length() && test; i++)
+                {
+                    out*= 10;
+                    out+= in.toLowerCase().charAt(i) - (Character.isLetter(in.charAt(i))? ('a'-1) : '0');
+                }
+                return out;
+            }
+            print("Invalid input. Please provide a whole number or letter.");
+        }
+    }
+    
+    public static void setPublicActive(Screen s)
+    {if(s.pub){active = s;} }
+    public void setPublicActive()
+    {setPublicActive(this);}
+    
+    public static void removeActiveScreen()
+    {
+        if(!active.pub)
+        {
+            screens.remove(actNum--);
+        }
+    }
+    
+    //public static void println(String s, Object o)
+    //{active.println(s);}
+    
+    public void println(String s)
+    { 
+        
+        if(pub){
+            pubPrintLn(s);
+        }
+        else
+        {
+            priPrintLn(s);
+        }
+    }
+    public void print(String s)
+    { 
+        if(pub){
+            pubPrint(s);
+        }
+        else
+        {
+            priPrint(s);
+        }
+    }
+    
+    public static void priPrintLn(String s)
+    {
+        priPrint(s);
+        active.text.add("");
+        active.line = "";
+        System.out.println("");
+        if(active.text.size() > screenSize)
+        {active.text.remove(0);}
+    }
+    public static void priPrint(String s)
+    {
+        active.line += s;
+        active.text.set(active.text.size()-1, active.line);
+        System.out.print(s);
+    }
+    public void pubPrintLn(String s)
+    {
+        pubPrint(s);
+        super.println("");
+        text.add("");
+        if(!vanashing){
+            for(Screen S : screens)
+            {S.prePrinted("");}
+        }
+    }
+    public void pubPrint(String s)
+    {
+        super.print(s);
+        line += s;
+        text.set(text.size()-1, line);
+        if(!vanashing){
+            for(Screen S : screens)
+            {S.prePrinted(s);}
+        }
+    }
+    
+    public void prePrinted(String s)
+    {
+        if(line.equals(line + s))
+        {
+            text.set(text.size() -1, line);
+            text.add("");
+            line = "";
+        }
+        else
+        {
+            line += s;
+            text.set(text.size()-1, line);
+        }
+    }
+    public static void wipeScreen()
+    {
+        active.text = new ArrayList<String>();
+        active.line = "";
+    }
+    
+    public static void clearScreen()
+    {
+        for(int i = 0; i<screenSize; i++)
+        //for(int i = 0; i<5; i++)
+        {
+            System.out.println();
+        }
+    }
+    public static void nextScreen()
+    {
+        int prev = actNum;
+        actNum = ++actNum >= screens.size() ? 0 : actNum;
+        active = screens.get(actNum);
+        for(int i = active.text.size() +1; i<screenSize; i++)
+        //for(int i = 0; i<5; i++)
+        {
+            System.out.println();
+        }
+        System.out.println(prev);
+        System.out.println(actNum);
+        for(String s : active.text)
+        {
+            System.out.println(s);
+        }
+    }
+} // 58 + 32 * 31
