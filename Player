@@ -1,5 +1,5 @@
 import java.util.*;
-public class Player extends ConsoleProgram
+public class Player extends Screen
 {
     public static final int[] SHIP_LENGTHS = {2, 3, 3, 4, 5};
     protected Grid myboard = new Grid(this); //sets this as the owner of it's grid
@@ -7,6 +7,8 @@ public class Player extends ConsoleProgram
     protected HashMap<Integer, ArrayList<Ship>> placed = nonePlaced(); //Assumed empty boards at start, and can be used to rempty. Also, see above.
     public Player opponent = null;
     private int hitCount = 0;
+    private int missCount = 0;
+    private int deltaHits = 0;
     
     
     public Player(){}
@@ -45,6 +47,7 @@ public class Player extends ConsoleProgram
         {out.put(i,0);}
         for(int i: SHIP_LENGTHS)
         {out.put(i, out.get(i)+1);}
+        //println(out);
         return out;
     }
     private HashMap<Integer, ArrayList<Ship>> nonePlaced()
@@ -62,7 +65,23 @@ public class Player extends ConsoleProgram
     }
     public int hit() // increments the hits you have and returns it. As is, could be void.
     {
+        deltaHits++;
         return ++hitCount;
+    }
+    public int getMisses()
+    {
+        return missCount;
+    }
+    public int miss() // increments the misses you have and returns it. As is, could be void.
+    {
+        return ++missCount;
+    }
+    public int deltaHits(){return deltaHits(false);}
+    public int deltaHits(boolean clear)
+    {
+        int out = deltaHits;
+        deltaHits = clear ? 0 : deltaHits;
+        return out;
     }
     public Ship addShip(Ship s) //adds a ship to your list and board
     {
@@ -77,7 +96,7 @@ public class Player extends ConsoleProgram
         }
         else
         {
-            System.out.println("error # 124");
+            println("error # 124");
         }
         return null;
     }
@@ -88,20 +107,21 @@ public class Player extends ConsoleProgram
         {
             if(initial){pMyShips();}
             initial = false;
-            s.setLocation(s.getRow(), readInt("What column do you want it on? "));
+            s.setLocation(s.getRow(), readInt("What column do you want it on? ") - 1);
         }
         while(s.getRow() == -1)
         {
             if(initial){pMyShips();}
             initial = false;
-            s.setLocation(readInt("What row do you want it on? "),s.getColumn());
+            s.setLocation(readInt("What row do you want it on? ") - 1, s.getColumn());
         }
         while(s.getDirection() == -1)
         {
             if(initial){pMyShips();}
             initial = false;
             String in = readLine("What Direction do you want it?");
-            s.setDirection(in.length() == 0? false : "vuVU1tT".indexOf(in.toLowerCase().charAt(0)) == -1 ? true : false);
+            //s.setDirection(in.length() == 0? false : "vuVU1tT".indexOf(in.toLowerCase().charAt(0)) == -1 ? true : false);
+            s.setDirection((in.length() == 0 || "hHrRlL1tT".indexOf(in.charAt(0)) != -1 ));
         }
         if(myboard.addShip(s))
         {
@@ -116,20 +136,19 @@ public class Player extends ConsoleProgram
         boolean out = myboard.addShip(s);
         while(contenue)
         {
-            s.setLocation(readInt("What row do you want it on?"), readInt("What column do you want it on?"));
+            println("Ships cannot overlap and must be on the Board.");
+            s.setLocation(readInt("What row do you want it on?") - 1, readInt("What column do you want it on?") - 1);
             String in = readLine("Direction: ");
             s.setDirection((in.length() == 0 || "hHrRlL1tT".indexOf(in.charAt(0)) != -1 ));
             out = s.getRow() >-1 && s.getColumn() > -1 && s.endRow()<10 && s.endColumn() < 10 && myboard.addShip(s);
             if(!out)
-            {
-                contenue = readBoolean("Ships cannot overlap and must be on the Board. Would you retry? ");
-            } else {break;}
+            {break;}
         }
         return out;
     }
     public boolean guess()
     {
-        return guess(readInt("What row would you like to guess? "), readInt("What column would you like to guess? "));
+        return guess(readExpandedInt("What row would you like to guess? ") - 1, readExpandedInt("What column would you like to guess? ") - 1);
     }
     public boolean guess(int r, int c)
     {
@@ -138,10 +157,15 @@ public class Player extends ConsoleProgram
         while(!theirBoard().get(r,c).isUnguessed())
         {
             println("Location already guessed. Please try again.");
-            r = readInt("Row: ");
-            c = readInt("Column: ");
+            r = readExpandedInt("Row: ") - 1;
+            c = readExpandedInt("Column: ") - 1;
         }
         return theirBoard().guess(r,c);
+    }
+    public void printLatestGuess()
+    {
+        myboard.printLG();
+        println("");
     }
     public void pMyShips()
     {
@@ -157,28 +181,5 @@ public class Player extends ConsoleProgram
     {
         theirBoard().printHM();
         println("");
-    }
-    public int readInt(String s)
-    {
-        while(true)
-        {
-            String in = readLine(s);
-            boolean test = true;
-            for(int i = 0; i<in.length() && test; i++)
-            {
-                test = Character.isLetterOrDigit(s.charAt(i));
-            }
-            if(test)
-            {
-                int out = 0;
-                for(int i = 0; i<in.length() && test; i++)
-                {
-                    out*= 10;
-                    out+= in.toLowerCase().charAt(i) - (Character.isLetter(in.charAt(i))? 'a' : '0');
-                }
-                return out;
-            }
-            print("Invalid input. Please provide a whole number or letter.");
-        }
     }
 }
