@@ -1,8 +1,10 @@
-public class Grid
+public class Grid extends ConsoleProgram
 {
     public static int size = 10;
     
-    private Location[][] grid;
+    private Location[][] grid = null;
+    private Player owner = null;
+    private Location latestGuess;
     
     public static int map(int in, int inMin, int inMax, int outMin, int outMax)
     {
@@ -21,71 +23,134 @@ public class Grid
             grid[i] = a;
         }
     }
-    public void guess(int row, int column)
+    public Grid(Player p)
     {
-        grid[row][column].guess();
+        this();
+        ownedBy(p);
     }
-    public boolean status(int row, int column)
+    public void ownedBy(Player p)
+    {
+        owner = p;
+    }
+    public boolean guess(int r, int c) // Marks the location has been guessed and returns if it
+    {
+        if(get(r,c).guess())
+        {
+            owner.hit();
+        }
+        latestGuess = grid[r][c];
+        return grid[r][c].hasShip();
+    }
+    /**public boolean status(int row, int column) // all of these are never called.
     {
         return !grid[row][column].isUnguessed() ? grid[row][column].checkHit() : null;
     }
     public boolean unguessed(int row, int column)
     {
         return grid[row][column].isUnguessed();
-    }
+    } **/
     public void setShip(int row, int column, boolean ship)
     {
         grid[row][column].setShip(ship);
     }
-    public boolean hasShip(int row, int column)
+    /**public boolean hasShip(int row, int column)
     {
         return grid[row][column].hasShip();
-    }
+    }**/
     public Location get(int row, int column)
     {
         return grid[row][column];
     }
-    public void addShip(Ship s)
+    public boolean addShip(Ship s)
     {
-        System.out.println(s.getLength());
-        for(int i = 0; i<s.getLength(); i++)
+        //println(s.getLength());
+        boolean out = true;
+        for(int i = 0; i<s.getLength() && out; i++)
         {
-            System.out.println(i);
             int a = map(i, 0, s.getLength(), s.getRow(), s.endRow());
             int b = map(i, 0, s.getLength(), s.getColumn(), s.endColumn());
-            System.out.println(a);
-            System.out.println(b);
+            out = out && a<size & b<size && !get(a,b).hasShip();
+        }
+        for(int i = 0; i<s.getLength() && out; i++)
+        {
+            int a = map(i, 0, s.getLength(), s.getRow(), s.endRow());
+            int b = map(i, 0, s.getLength(), s.getColumn(), s.endColumn());
             setShip(a,b, true);
         }
+        return out;
     }
     
-    public void printHM()
+    public void printHM() //prints hits as H and Misses as 0. Unguessed is -
     {
-        System.out.println("");
-        System.out.print("  1 2 3 4 5 6 7 8 9 10");
+        println("");
+        print("  1 2 3 4 5 6 7 8 9 10");
         for(int i = 0; i<10; i++)
         {
-            System.out.println("");
-            System.out.print("" + (char)( i + (int) 'a'));
+            println("");
+            print("" + (char)( i + (int) 'a'));
             for(int j = 0; j<10; j++)
             {
-                System.out.print(" " + (grid[i][j].isUnguessed() ? "-" : (grid[i][j].hasShip() ? "X" : "O")));
+                print(" " + (grid[i][j].isUnguessed() ? "-" : (grid[i][j].hasShip() ? "H" : "O")));
     }   }   }
     
-    public void printShips()
+    public void printShips() //Prints Ships as X and non-ships as -
     {
-        System.out.println();
-        System.out.print("  1 2 3 4 5 6 7 8 9 10");
+        println("");
+        print("  1 2 3 4 5 6 7 8 9 10");
         for(int i = 0; i<10; i++)
         {
-            System.out.println("");
-            System.out.print("" + (char)( i + (int) 'a'));
+            println("");
+            print("" + (char)( i + (int) 'a'));
             for(int j = 0; j< 10; j++)
             {
                 String a = grid[i][j].hasShip() ? "X" : "-";
-                System.out.print(" " + a);
+                print(" " + a);
                 
     }   }   }
     
+    public void printHMS() //Prints hits as H and Misses as 0. Unguessed ships are X, else are -
+    {
+        println("");
+        print("  1 2 3 4 5 6 7 8 9 10");
+        for(int i = 0; i<10; i++)
+        {
+            println("");
+            print("" + (char)( i + (int) 'a'));
+            for(int j = 0; j< 10; j++)
+            {
+                String a;
+                if(grid[i][j].isUnguessed())
+                {
+                    a = grid[i][j].hasShip() ? "X" : "-";
+                }
+                else
+                {
+                    a = grid[i][j].hasShip() ? "H" : "O";
+                }
+                print(" " + a);
+                
+    }   }   }
     
+    public void printLG() //printHMS but marks latest guess as L
+    {
+        println("");
+        print("  1 2 3 4 5 6 7 8 9 10");
+        for(int i = 0; i<10; i++)
+        {
+            println("");
+            print("" + (char)( i + (int) 'a'));
+            for(int j = 0; j< 10; j++)
+            {
+                String a;
+                if(grid[i][j].isUnguessed())
+                {
+                    a = grid[i][j].hasShip() ? "X" : "-";
+                }
+                else
+                {
+                    a = grid[i][j] == latestGuess? "L" : (grid[i][j].hasShip() ? "H" : "O");
+                }
+                print(" " + a);
+                
+    }   }   }
 }
