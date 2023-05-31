@@ -3,7 +3,7 @@ public class Computer extends Player
 {
     public Computer(){}
     public Computer(Player opp)
-    {/**setOpponent(opp);**/}
+    {/*setOpponent(opp);**/}
     public Ship addShip(Ship s) // adds a ship to your list and board
     {
         if(unplaced.get(s.getLength()) > 0)
