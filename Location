@@ -1,0 +1,27 @@
+public class Location
+{
+    private boolean ship = false;
+    private boolean guessed = false;
+    private int row;
+    private int column;
+    
+    public Location(int row, int column)
+    {
+        this.row = row;
+        this.column = column;
+    }
+    
+    public boolean checkHit()
+    {   return  guessed && ship;    }
+    public boolean checkMiss()
+    {   return guessed && !ship;    }
+    public boolean isUnguessed()
+    {   return !guessed;    }
+    public boolean hasShip()
+    {   return ship;    }
+    
+    public void guess()
+    {   guessed = true; }
+    public void setShip(boolean ship)
+    {   this.ship = ship;   }
+}
