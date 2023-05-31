@@ -2,14 +2,8 @@ public class Location
 {
     private boolean ship = false;
     private boolean guessed = false;
-    private int row;
-    private int column;
     
-    public Location(int row, int column)
-    {
-        this.row = row;
-        this.column = column;
-    }
+    public Location(){}
     
     public boolean checkHit()
     {   return  guessed && ship;    }
