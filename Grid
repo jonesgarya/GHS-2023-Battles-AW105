@@ -1,0 +1,76 @@
+public class Grid
+{
+    public static int size = 10;
+    
+    private Location[][] grid;
+    
+    public Grid(){
+        grid = new Location[size][size];
+        for(int i = 0; i<size; i++)
+        {
+            Location[] a = new Location[size];
+            for(int j = 0; j<size; j++)
+            {
+                a[j] = new Location();
+            }
+            grid[i] = a;
+        }
+    }
+    public void guess(int row, int column)
+    {
+        grid[row][column].guess();
+    }
+    public boolean status(int row, int column)
+    {
+        return !grid[row][column].isUnguessed() ? grid[row][column].checkHit() : null;
+    }
+    public boolean unguessed(int row, int column)
+    {
+        return grid[row][column].isUnguessed();
+    }
+    public void setShip(int row, int column, boolean ship)
+    {
+        grid[row][column].setShip(ship);
+    }
+    public boolean hasShip(int row, int column)
+    {
+        return grid[row][column].hasShip();
+    }
+    public Location get(int row, int column)
+    {
+        return grid[row][column];
+    }
+    
+    public void printHM()
+    {
+        System.out.println("");
+        System.out.print("  1 2 3 4 5 6 7 8 9 10");
+        for(int i = 0; i<10; i++)
+        {
+            System.out.println("");
+            System.out.print("" + (char)( i + (int) 'a'));
+            for(int j = 0; j<10; j++)
+            {
+                System.out.print(" " + (grid[i][j].isUnguessed() ? "-" : (grid[i][j].hasShip() ? "X" : "O")));
+    }   }   }
+    
+    public void printShips()
+    {
+        System.out.println();
+        System.out.print("  1 2 3 4 5 6 7 8 9 10");
+        for(int i = 0; i<10; i++)
+        {
+            System.out.println("");
+            System.out.print("" + (char)( i + (int) 'a'));
+            for(int j = 0; j< 10; j++)
+            {
+                String a = grid[i][j].hasShip() ? "X" : "-";
+                System.out.print(" " + a);
+                
+    }   }   }
+    
+    public static int map(int in, int inMin, int inMax, int outMin, int outMax)
+    {
+        return ( (in - inMin) / (inMax - inMin) ) * (outMax - outMin) + outMin;
+    }
+}
