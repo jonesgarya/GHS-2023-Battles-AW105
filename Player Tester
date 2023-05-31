@@ -1,0 +1,21 @@
+public class PlayerTester extends ConsoleProgram
+{
+    public void run()
+    {
+/**/    Player human = new Player();
+        Player computer = new Player(human);
+        human.opponent = computer; //my setter isn't working, so it needs to be done manually
+        computer.opponent = human;
+        
+        human.addShip(new Ship(2).setLocation(0,0).setDirection(false));
+        computer.addShip(new Ship(5).setLocation(0,0).setDirection(false));
+            
+        human.pMyShips();
+        human.pTheirBoard();
+        human.pMyBoard();
+        // Note, Hits misses and ships are all shown in pMyBoard() 
+        // Hit is H, Miss is 0
+        // Unguessed ship is X, unguessed miss is -
+/**/    
+    }
+}
