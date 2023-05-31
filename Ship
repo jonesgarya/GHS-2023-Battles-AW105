@@ -1,13 +1,13 @@
 public class Ship
 {
-    private int length = -1;
+    private int length;
     private int row = -1;
     private int column = -1;
     private int direction = -1;
     
-    public Ship(int length)
+    public Ship(int newlength)
     {
-        this.length = length;
+        this.length = newlength;
     }
     public boolean isLocationSet()
     {
@@ -15,46 +15,42 @@ public class Ship
     }
     public boolean isDirectionSet()
     {
-        return direction == -1;
+        return direction != -1;
     }
     
-    public void setLocation(int row, int column)
+    public Ship setLocation(int row, int column)
     {
         this.row = Math.abs(row % Grid.size); 
         this.column = Math.abs(column % Grid.size); 
+        return this;
     }
-    public void isDirectionSet(boolean direction)
+    public Ship setDirection(boolean direction)
     {
         this.direction = direction ? 1 : 0;
+        return this;
     }
     
     public int getRow()
-    {
-        return row;
-    }
+    {   return row; }
     public int getColumn()
-    {
-        return column;
-    }
+    {   return column;  }
     public int getDirection()
-    {
-        return direction;
-    }
+    {   return direction;   }
     public boolean getD()
-    {
-        return direction == 1;
-    }
+    {   return direction == 1;  }
+    public int getLength()
+    {   return length;  }
     public String directionToString()
     {
         return direction == 1 ? "Vertical" : (direction == 0? "Horizonatal" : "Not Set");
     }
     public int endRow()
     {
-        return row + length * (direction == -1 ? 0 : 1- direction);
+        return row + length * (direction == -1 ? 0 : direction);
     }
     public int endColumn()
     {
-        return row + length * (direction == -1 ? 0 : direction);
+        return column + length * (direction == -1 ? 0 : 1- direction);
     }
     
     public String toString()
