@@ -45,7 +45,6 @@ public class Player extends ConsoleProgram
         {out.put(i,0);}
         for(int i: SHIP_LENGTHS)
         {out.put(i, out.get(i)+1);}
-        println(out);
         return out;
     }
     private HashMap<Integer, ArrayList<Ship>> nonePlaced()
@@ -78,7 +77,7 @@ public class Player extends ConsoleProgram
         }
         else
         {
-            println("error # 124");
+            System.out.println("error # 124");
         }
         return null;
     }
@@ -144,11 +143,6 @@ public class Player extends ConsoleProgram
         }
         return theirBoard().guess(r,c);
     }
-    public void printLatestGuess()
-    {
-        myboard.printLG();
-        println("");
-    }
     public void pMyShips()
     {
         myboard.printShips();
@@ -163,5 +157,28 @@ public class Player extends ConsoleProgram
     {
         theirBoard().printHM();
         println("");
+    }
+    public int readInt(String s)
+    {
+        while(true)
+        {
+            String in = readLine(s);
+            boolean test = true;
+            for(int i = 0; i<in.length() && test; i++)
+            {
+                test = Character.isLetterOrDigit(s.charAt(i));
+            }
+            if(test)
+            {
+                int out = 0;
+                for(int i = 0; i<in.length() && test; i++)
+                {
+                    out*= 10;
+                    out+= in.toLowerCase().charAt(i) - (Character.isLetter(in.charAt(i))? 'a' : '0');
+                }
+                return out;
+            }
+            print("Invalid input. Please provide a whole number or letter.");
+        }
     }
 }
