@@ -4,7 +4,12 @@ public class GridTester extends ConsoleProgram
     {
         Grid a = new Grid();
         a.printHM();
-        println();
+        a.printShips();
+        Ship b = new Ship(3);
+        b.setLocation(3,3);
+        b.setDirection(true);
+        a.addShip(b);
+        a.printHM();
         a.printShips();
     }
 }
