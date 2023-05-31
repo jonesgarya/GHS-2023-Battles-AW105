@@ -1,0 +1,167 @@
+import java.util.*;
+public class Player extends ConsoleProgram
+{
+    public static final int[] SHIP_LENGTHS = {2, 3, 3, 4, 5};
+    protected Grid myboard = new Grid(this); //sets this as the owner of it's grid
+    protected HashMap<Integer, Integer> unplaced = maxShips(); //Allows for modularity
+    protected HashMap<Integer, ArrayList<Ship>> placed = nonePlaced(); //Assumed empty boards at start, and can be used to rempty. Also, see above.
+    public Player opponent = null;
+    private int hitCount = 0;
+    
+    
+    public Player(){}
+    public Player(Player opp)
+    {
+        //setOpponent(opp);
+    }
+    /**public void setOpponent(Player opp)
+    {
+        opp.setOpponent2(this);
+        opponent = opp;
+    }
+    public void setOpponent2(Player opp)
+    {
+        opponent = opp;
+    } **/ // Under maintenence
+    public Grid theirBoard() //my opponent's board
+    {
+        return opponent.getMyBoard();
+    }
+    public Grid getMyBoard()
+    {
+        return myboard;
+    }
+    public static int shipCount()
+    {
+        int out = 0;
+        for(int i : SHIP_LENGTHS)
+        {   out += i;   }
+        return out;
+    }
+    private HashMap<Integer, Integer> maxShips()
+    {
+        HashMap<Integer, Integer> out = new HashMap<Integer, Integer>();
+        for(int i : SHIP_LENGTHS)
+        {out.put(i,0);}
+        for(int i: SHIP_LENGTHS)
+        {out.put(i, out.get(i)+1);}
+        println(out);
+        return out;
+    }
+    private HashMap<Integer, ArrayList<Ship>> nonePlaced()
+    {
+        HashMap<Integer, ArrayList<Ship>> out = new HashMap<Integer, ArrayList<Ship>>();
+        for(Integer i : maxShips().keySet())
+        {
+            out.put(i, new ArrayList<Ship>());
+        }
+        return out;
+    }
+    public int getHits()
+    {
+        return hitCount;
+    }
+    public int hit() // increments the hits you have and returns it. As is, could be void.
+    {
+        return ++hitCount;
+    }
+    public Ship addShip(Ship s) //adds a ship to your list and board
+    {
+        if(unplaced.get(s.getLength()) > 0)
+        {
+            if(placeShip(s))
+            {
+                unplaced.put(s.getLength(),unplaced.get(s.getLength())-1);
+                placed.get(s.getLength()).add(s);
+                return s;
+            }
+        }
+        else
+        {
+            println("error # 124");
+        }
+        return null;
+    }
+    private boolean placeShip(Ship s) //adds a ship to your board
+    {
+        boolean initial = true; // only want to print once
+        while(s.getColumn() == -1) //checks for unset location and directions. Usually the case.
+        {
+            if(initial){pMyShips();}
+            initial = false;
+            s.setLocation(s.getRow(), readInt("What column do you want it on? "));
+        }
+        while(s.getRow() == -1)
+        {
+            if(initial){pMyShips();}
+            initial = false;
+            s.setLocation(readInt("What row do you want it on? "),s.getColumn());
+        }
+        while(s.getDirection() == -1)
+        {
+            if(initial){pMyShips();}
+            initial = false;
+            String in = readLine("What Direction do you want it?");
+            s.setDirection(in.length() == 0? false : "vuVU1tT".indexOf(in.toLowerCase().charAt(0)) == -1 ? true : false);
+        }
+        if(myboard.addShip(s))
+        {
+            return true;
+        }
+        if (initial)
+        {
+            println("error #123");
+            return false;
+        }
+        boolean contenue = true;
+        boolean out = myboard.addShip(s);
+        while(contenue)
+        {
+            s.setLocation(readInt("What row do you want it on?"), readInt("What column do you want it on?"));
+            String in = readLine("Direction: ");
+            s.setDirection((in.length() == 0 || "hHrRlL1tT".indexOf(in.charAt(0)) != -1 ));
+            out = s.getRow() >-1 && s.getColumn() > -1 && s.endRow()<10 && s.endColumn() < 10 && myboard.addShip(s);
+            if(!out)
+            {
+                contenue = readBoolean("Ships cannot overlap and must be on the Board. Would you retry? ");
+            } else {break;}
+        }
+        return out;
+    }
+    public boolean guess()
+    {
+        return guess(readInt("What row would you like to guess? "), readInt("What column would you like to guess? "));
+    }
+    public boolean guess(int r, int c)
+    {
+        r = Math.abs(r%Grid.size); //moves the guess into the playing feild if outside of it.
+        c = Math.abs(c%Grid.size);
+        while(!theirBoard().get(r,c).isUnguessed())
+        {
+            println("Location already guessed. Please try again.");
+            r = readInt("Row: ");
+            c = readInt("Column: ");
+        }
+        return theirBoard().guess(r,c);
+    }
+    public void printLatestGuess()
+    {
+        myboard.printLG();
+        println("");
+    }
+    public void pMyShips()
+    {
+        myboard.printShips();
+        println("");
+    }
+    public void pMyBoard()
+    {
+        myboard.printHMS();
+        println("");
+    }
+    public void pTheirBoard()
+    {
+        theirBoard().printHM();
+        println("");
+    }
+}
