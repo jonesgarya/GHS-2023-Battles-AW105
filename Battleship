@@ -1,0 +1,149 @@
+import java.util.*;
+public class Battleship extends ConsoleProgram
+{
+    //private ArrayList<Player> players = new ArrayList<Player>();
+    
+    private final int shipCount = Player.shipCount();
+    public void run()
+    {
+        int humCount = readInt("How many Human players? ");
+        int comCount = readInt("How many Computer players? ");
+        if(humCount + comCount == 2)
+        {   switch(humCount)
+            {
+                case 1:
+                    PvC();
+                    break;
+                case 2:
+                    PvP();
+                    break;
+                case 0:
+                    CvC();
+            }
+        }
+        else if (humCount + comCount > 2)
+        {
+            MultiPlayer(humCount, comCount);
+        }
+        else
+        {
+            println("Error. Please try a PvC game, on the house.");
+        }
+    }
+    
+    public void PvP()
+    {
+        println("Not set up yet. Please try a PvC game, on the house.");
+    }
+    public void CvC()
+    {
+        println("Not set up yet. Please try a PvC game, on the house.");
+    }
+    public void MultiPlayer(int coms, int peeps)
+    {
+        println("Not set up yet. Please try a PvC game, on the house.");
+    }
+    
+    public void PvC()
+    {
+        Player p = new Player();
+        Player c = new Computer(p);
+        c.opponent = p;
+        p.opponent = c;
+        
+        for(int i : p.SHIP_LENGTHS)
+        {
+            println();
+            println("Add a new ship of length " + i + " to your board.");
+            p.addShip(new Ship(i));
+            println();
+            c.addShip(new Ship(i));
+        }
+        boolean turn = Randomizer.nextBoolean();
+        double turnCount = 0;
+        while (true)
+        {
+            println("");  println("");
+            if(turn)
+            {
+                println("Your Turn!");
+                //p.pTheirBoard();
+                c.getMyBoard().printHM();
+                p.println("");
+                if(p.guess())
+                {
+                    println("");
+                    println("You got it!");
+                }
+                else
+                {
+                    println("");
+                    println("You missed it.");
+                }
+            }
+            else
+            {
+                println("Their Turn.");
+/**/            //c.pTheirBoard();
+                p.getMyBoard().printHM();
+                c.println("");
+                if(c.guess())
+                {
+                    println("");
+                    println("They got it.");
+                }
+                else
+                {
+                    println("");
+                    println("They missed it!");
+                }
+            }
+            println("Round: " + ((int)(turnCount+= .5)));
+            if((p.getHits() >= shipCount) || (c.getHits() >= shipCount))
+            {break;}
+            println(p.getHits());
+            println(c.getHits());
+            println(shipCount);
+            turn = !turn;
+        }  
+        println(""); println(""); println("");
+        if(turn)
+        {
+            println("You Won!");
+            println("Take a look at how close they were.");
+            p.pMyShips();
+            p.pMyBoard();
+        }
+        else
+        {
+            println("You lost.");
+            println("Take a look at how close you were.");
+            c.pMyShips();
+            c.pMyBoard();
+        }
+        
+    }
+    public int readInt(String s)
+    {
+        while(true)
+        {
+            String in = readLine(s);
+            boolean test = true;
+            for(int i = 0; i<in.length() && test; i++)
+            {
+                test = Character.isLetterOrDigit(s.charAt(i));
+            }
+            if(test)
+            {
+                int out = 0;
+                for(int i = 0; i<in.length() && test; i++)
+                {
+                    out*= 10;
+                    out+= in.toLowerCase().charAt(i) - (Character.isLetter(in.charAt(i))? ('a'-1)  : '0');
+                }
+                return out;
+            }
+            print("Invalid input. Please provide a whole number or letter.");
+        }
+    }
+}
