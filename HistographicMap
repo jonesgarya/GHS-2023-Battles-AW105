@@ -1,0 +1,69 @@
+public class HistographicMap<Y, X> extends AbstractMap<Y, X>   implements Map<Y, X>
+{
+  private ArrayList<Y> columnSet = new ArrayList<Y>();
+  private ArrayList<X> widthSet = new rangeSet<X>();
+  private ReversableHashMap<Integer, Integer> conections = new ReversableHashMap<Integer, Integer>();
+  private X widthMax;
+  private X widthMin;
+  
+  private boolean reversable = false;
+  
+  public HistographicMap<Y,X>(){}
+  public HistographicMap<Y,X>(boolean reversable)
+  {
+    this.reversable = reversable;
+  }
+  
+  public Y add(Y y, X x)
+  {
+    if(widthSet.size() == 0)
+    {
+      widthMin = 0;
+      widthMax = 0;
+    }
+    if(reversable && columncolumnSet.size()>0 && columncolumnSet.indexOf(y) != -1)
+    {
+      return null;
+    }
+    conections.put(widthSet.size(), columnSet.size())
+    columnSet.add(y);
+    widthSet.add(x);
+    widthMax+=x;
+    
+    return y;
+  }
+  public X add (X x)
+  {
+    if(widthSet.size() == 0)
+    {
+      widthMin = 0;
+      widthMax = 0;
+    }
+    widthMax += x;
+    widthSet.add(0);
+  }
+  public boolean add (X min, X max)
+  {
+    if(widthSet.size() == 0)
+    {
+      widthMin = min;
+      widthMax = max;
+      widthSet.add(min);
+      return true;
+    }
+    else
+    {
+      if(max < widthMin || min > widthMax)
+      {
+        
+      }
+    }
+  }
+
+  public Y put(Y y, X, x)
+
+  
+  
+  
+  
+}
