@@ -1,6 +1,8 @@
 import java.util.*;
 public class Computer extends Player
 {
+    private static HistographicMap<Integer[], Double> toHit = new HistographicMap<Integer[], Double>(true, true);
+    
     public Computer(){}
     public Computer(Player opp)
     {/*setOpponent(opp);**/}
@@ -51,16 +53,20 @@ public class Computer extends Player
             {return true;}
         }
     }
+    private double toHitSum()
+    {
+        double out = 0;
+        for(Double min : toHit.minSets())
+        {
+            out += min;
+        }
+        return out;
+    }
     public boolean guess() //Randomly guesses a ship
     {
-        int r = -1;
-        int c = -1;
-        while(r ==-1 || c==-1 || (!theirBoard().get(r,c).isUnguessed()))
-        {
-            r = Randomizer.nextInt(myboard.size);
-            c = Randomizer.nextInt(myboard.size);
-        }
-        return super.theirBoard().guess(r,c);
+        double i = randomizer.nextDouble(toHitSum);
+        Integer[] out = toHit.ranColumn(double(i));
+        return super.theirBoard().guess(out[0], out[1]);
     }
     
 }
