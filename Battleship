@@ -1,6 +1,6 @@
 import java.util.*;
 public class Battleship extends Screen
-{
+{ 
     //private ArrayList<Player> players = new ArrayList<Player>();
     Screen pub = new Screen(true);
     Screen van = new Screen(null);
